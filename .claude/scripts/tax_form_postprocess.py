@@ -19,6 +19,11 @@ import re
 from pathlib import Path
 from datetime import date
 
+# Boot-shim: must run BEFORE any framework imports (config, runtime, etc.)
+from personas import apply_persona_override
+
+apply_persona_override()
+
 
 # IRS form section patterns -> markdown headings
 SECTION_PATTERNS = [

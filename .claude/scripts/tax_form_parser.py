@@ -15,6 +15,11 @@ import argparse
 from pathlib import Path
 from datetime import date
 
+# Boot-shim: must run BEFORE any framework imports (config, runtime, etc.)
+from personas import apply_persona_override
+
+apply_persona_override()
+
 FINANCE_VAULT = Path(r"C:\Users\YourUser\finance-vault")
 CONCEPTS_DIR = FINANCE_VAULT / "concepts"
 

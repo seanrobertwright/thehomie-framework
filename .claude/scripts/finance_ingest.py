@@ -15,8 +15,13 @@ import subprocess
 import sys
 from pathlib import Path
 
-from entity_extractor import preserve_raw
-from tax_form_postprocess import postprocess_tax_markdown
+# Boot-shim: must run BEFORE any framework imports (config, runtime, etc.)
+from personas import apply_persona_override
+
+apply_persona_override()
+
+from entity_extractor import preserve_raw  # noqa: E402
+from tax_form_postprocess import postprocess_tax_markdown  # noqa: E402
 
 FINANCE_VAULT = Path(r"C:\Users\YourUser\finance-vault")
 SCRIPTS_DIR = Path(__file__).parent

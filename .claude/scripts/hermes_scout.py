@@ -19,7 +19,12 @@ import sys
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
-from config import MEMORY_DIR, STATE_DIR, now_local
+# Boot-shim: must run BEFORE any framework imports (config, runtime, etc.)
+from personas import apply_persona_override
+
+apply_persona_override()
+
+from config import MEMORY_DIR, STATE_DIR, now_local  # noqa: E402
 
 _SCRIPTS_DIR = Path(__file__).resolve().parent
 if str(_SCRIPTS_DIR) not in sys.path:
