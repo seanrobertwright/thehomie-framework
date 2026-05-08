@@ -525,3 +525,288 @@ def test_prp7_dynamic_lock_pid_scan() -> None:
         f"{failures!r}. Each one is a public-mirror leak risk. Add to "
         f"DENY_FILES (layer 1) or fix DENY_EXTENSIONS / DENY_PATTERNS."
     )
+
+
+# === PRD-8 Phase 7a (WS1) — SECRET_PREFIXES regression tests ===
+#
+# R1 B1 + M2 fix — uses the canonical `contains_leak_pattern` helper from
+# security.patterns (NOT a private `_contains_leak_pattern`). One test per
+# SECRET_PREFIXES entry verifies LEAK_PATTERN_REGEX catches the synthetic
+# key. Synthetic — NEVER a real key (24-char `x` tail).
+#
+# R1 M3 negative tests — UUIDs, git SHAs, short labels, JSON field names
+# must NOT match LEAK_PATTERN_REGEX (defense against false-positive
+# redaction in vault notes / commit messages / config).
+
+
+def test_phase7a_security_patterns_module_imports() -> None:
+    from security.patterns import (
+        LEAK_PATTERN_REGEX,
+        PREFIX_VENDOR_MAP,
+        SECRET_PREFIXES,
+        contains_leak_pattern,
+    )
+    assert isinstance(SECRET_PREFIXES, tuple)
+    assert len(SECRET_PREFIXES) >= 27
+    assert callable(contains_leak_pattern)
+
+
+def test_phase7a_sk_proj_caught() -> None:
+    from security.patterns import contains_leak_pattern
+    assert contains_leak_pattern("sk-proj-" + "x" * 24)
+
+
+def test_phase7a_sk_ant_caught() -> None:
+    from security.patterns import contains_leak_pattern
+    assert contains_leak_pattern("sk-ant-" + "x" * 24)
+
+
+def test_phase7a_sk_lf_caught() -> None:
+    from security.patterns import contains_leak_pattern
+    assert contains_leak_pattern("sk-lf-" + "x" * 24)
+
+
+def test_phase7a_pk_lf_caught() -> None:
+    from security.patterns import contains_leak_pattern
+    assert contains_leak_pattern("pk-lf-" + "x" * 24)
+
+
+def test_phase7a_sk_legacy_caught() -> None:
+    from security.patterns import contains_leak_pattern
+    assert contains_leak_pattern("sk-" + "x" * 24)
+
+
+def test_phase7a_sk_live_caught() -> None:
+    from security.patterns import contains_leak_pattern
+    assert contains_leak_pattern("sk_live_" + "x" * 24)
+
+
+def test_phase7a_sk_test_caught() -> None:
+    from security.patterns import contains_leak_pattern
+    assert contains_leak_pattern("sk_test_" + "x" * 24)
+
+
+def test_phase7a_rk_live_caught() -> None:
+    from security.patterns import contains_leak_pattern
+    assert contains_leak_pattern("rk_live_" + "x" * 24)
+
+
+def test_phase7a_pk_live_caught() -> None:
+    from security.patterns import contains_leak_pattern
+    assert contains_leak_pattern("pk_live_" + "x" * 24)
+
+
+def test_phase7a_<REDACTED-elevenlabs>() -> None:
+    from security.patterns import contains_leak_pattern
+    assert contains_leak_pattern("sk_" + "x" * 24)
+
+
+def test_phase7a_gsk_groq_caught() -> None:
+    from security.patterns import contains_leak_pattern
+    assert contains_leak_pattern("gsk_" + "x" * 24)
+
+
+def test_phase7a_gr_gradium_caught() -> None:
+    from security.patterns import contains_leak_pattern
+    assert contains_leak_pattern("gr_" + "x" * 24)
+
+
+def test_phase7a_xoxb_slack_caught() -> None:
+    from security.patterns import contains_leak_pattern
+    assert contains_leak_pattern("xoxb-" + "x" * 24)
+
+
+def test_phase7a_xoxp_slack_caught() -> None:
+    from security.patterns import contains_leak_pattern
+    assert contains_leak_pattern("xoxp-" + "x" * 24)
+
+
+def test_phase7a_xapp_slack_caught() -> None:
+    from security.patterns import contains_leak_pattern
+    assert contains_leak_pattern("xapp-" + "x" * 24)
+
+
+def test_phase7a_ghp_github_caught() -> None:
+    from security.patterns import contains_leak_pattern
+    assert contains_leak_pattern("ghp_" + "x" * 24)
+
+
+def test_phase7a_gho_github_caught() -> None:
+    from security.patterns import contains_leak_pattern
+    assert contains_leak_pattern("gho_" + "x" * 24)
+
+
+def test_phase7a_ghu_github_caught() -> None:
+    from security.patterns import contains_leak_pattern
+    assert contains_leak_pattern("ghu_" + "x" * 24)
+
+
+def test_phase7a_ghs_github_caught() -> None:
+    from security.patterns import contains_leak_pattern
+    assert contains_leak_pattern("ghs_" + "x" * 24)
+
+
+def test_phase7a_ghr_github_caught() -> None:
+    from security.patterns import contains_leak_pattern
+    assert contains_leak_pattern("ghr_" + "x" * 24)
+
+
+def test_phase7a_akia_aws_caught() -> None:
+    from security.patterns import contains_leak_pattern
+    assert contains_leak_pattern("AKIA" + "X" * 24)
+
+
+def test_phase7a_arn_aws_caught() -> None:
+    from security.patterns import contains_leak_pattern
+    assert contains_leak_pattern("arn:aws:" + "x" * 24)
+
+
+def test_phase7a_aiza_google_caught() -> None:
+    from security.patterns import contains_leak_pattern
+    assert contains_leak_pattern("AIza" + "x" * 24)
+
+
+def test_phase7a_ya29_google_caught() -> None:
+    from security.patterns import contains_leak_pattern
+    assert contains_leak_pattern("ya29." + "x" * 24)
+
+
+def test_phase7a_eyj_jwt_caught() -> None:
+    from security.patterns import contains_leak_pattern
+    assert contains_leak_pattern("eyJ" + "x" * 24)
+
+
+def test_phase7a_npm_caught() -> None:
+    from security.patterns import contains_leak_pattern
+    assert contains_leak_pattern("npm_" + "x" * 24)
+
+
+def test_phase7a_dckr_docker_caught() -> None:
+    from security.patterns import contains_leak_pattern
+    assert contains_leak_pattern("dckr_" + "x" * 24)
+
+
+def test_phase7a_glpat_gitlab_caught() -> None:
+    from security.patterns import contains_leak_pattern
+    assert contains_leak_pattern("glpat-" + "x" * 24)
+
+
+def test_phase7a_sg_sendgrid_caught() -> None:
+    from security.patterns import contains_leak_pattern
+    assert contains_leak_pattern("SG." + "x" * 24)
+
+
+def test_phase7a_key_mailgun_caught() -> None:
+    from security.patterns import contains_leak_pattern
+    assert contains_leak_pattern("key-" + "x" * 24)
+
+
+def test_phase7a_hrku_heroku_caught() -> None:
+    from security.patterns import contains_leak_pattern
+    assert contains_leak_pattern("HRKU-" + "x" * 24)
+
+
+def test_phase7a_pcp_postmark_caught() -> None:
+    from security.patterns import contains_leak_pattern
+    assert contains_leak_pattern("pcp_" + "x" * 24)
+
+
+# === Replacement-ordering regressions (R1 B3 — most-specific wins) ===
+
+
+def test_phase7a_replacement_<REDACTED-elevenlabs>() -> None:
+    """sk-ant-xxxx scrubs to <REDACTED-anthropic>, NOT <REDACTED-openai>."""
+    out = sanitize.scrub_content("token=sk-ant-" + "x" * 30, "x.md")
+    assert "<REDACTED-anthropic>" in out
+    assert "<REDACTED-openai>" not in out
+
+
+def test_phase7a_replacement_<REDACTED-elevenlabs>() -> None:
+    out = sanitize.scrub_content("token=sk-proj-" + "x" * 30, "x.md")
+    assert "<REDACTED-openai>" in out
+
+
+def test_phase7a_replacement_<REDACTED-stripe>() -> None:
+    """sk_live_xxxx labeled stripe (sk_live_ prefix wins over sk_ via length-desc)."""
+    out = sanitize.scrub_content("k=sk_live_" + "x" * 30, "x.md")
+    assert "<REDACTED-stripe>" in out
+    assert "<REDACTED-elevenlabs>" not in out
+
+
+def test_phase7a_replacement_gsk_labels_groq() -> None:
+    out = sanitize.scrub_content("k=gsk_" + "x" * 30, "x.md")
+    assert "<REDACTED-groq>" in out
+
+
+def test_phase7a_replacement_gr_labels_gradium() -> None:
+    out = sanitize.scrub_content("k=gr_" + "x" * 30, "x.md")
+    assert "<REDACTED-gradium>" in out
+
+
+def test_phase7a_replacement_ghp_labels_github() -> None:
+    out = sanitize.scrub_content("k=ghp_" + "x" * 30, "x.md")
+    assert "<REDACTED-github>" in out
+
+
+def test_phase7a_replacement_akia_labels_aws() -> None:
+    out = sanitize.scrub_content("k=AKIA" + "X" * 30, "x.md")
+    assert "<REDACTED-aws>" in out
+
+
+def test_phase7a_replacement_aiza_labels_google() -> None:
+    out = sanitize.scrub_content("k=AIza" + "x" * 30, "x.md")
+    assert "<REDACTED-google>" in out
+
+
+def test_phase7a_replacement_eyj_labels_jwt() -> None:
+    out = sanitize.scrub_content("token=eyJ" + "x" * 30, "x.md")
+    assert "<REDACTED-jwt>" in out
+
+
+# === DENY layer regressions ===
+
+
+def test_phase7a_bak_in_deny_extensions() -> None:
+    assert ".bak" in sanitize.DENY_EXTENSIONS
+    assert ".backup" in sanitize.DENY_EXTENSIONS
+
+
+def test_phase7a_bak_file_is_denied() -> None:
+    assert sanitize.is_denied(".claude/data/dashboard.db.pre-v2.bak")
+
+
+def test_phase7a_dashboard_db_in_deny_files() -> None:
+    """R1 B7 fix — dashboard.db in DENY_FILES (audit_log lives inside)."""
+    assert ".claude/data/dashboard.db" in sanitize.DENY_FILES
+
+
+# === R1 M3 negative tests ===
+
+
+def test_phase7a_uuid_not_redacted() -> None:
+    """8-4-4-4-12 hex UUID does NOT match LEAK_PATTERN_REGEX."""
+    from security.patterns import contains_leak_pattern
+    sample = "550e8400-e29b-41d4-a716-446655440000"
+    assert not contains_leak_pattern(sample)
+
+
+def test_phase7a_git_sha_not_redacted() -> None:
+    """40-char hex SHA does NOT match."""
+    from security.patterns import contains_leak_pattern
+    sample = "a" * 40
+    assert not contains_leak_pattern(sample)
+
+
+def test_phase7a_short_key_label_not_redacted() -> None:
+    """Bare 'key-x' (under 16 tail chars) does NOT match."""
+    from security.patterns import contains_leak_pattern
+    assert not contains_leak_pattern("key-x")
+    assert not contains_leak_pattern("sk_x")
+
+
+def test_phase7a_field_name_key_not_redacted() -> None:
+    """JSON field name 'key-name' does NOT match (16+ char tail required)."""
+    from security.patterns import contains_leak_pattern
+    sample = '{"key-name": "value"}'
+    assert not contains_leak_pattern(sample)
+
