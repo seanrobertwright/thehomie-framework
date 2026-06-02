@@ -96,6 +96,14 @@ MANUAL_DOC_RELS = tuple(
         for path in (REPO_ROOT / "docs" / "manual").rglob("*.md")
     )
 )
+CABINET_VOICE_AVATAR_RELS = tuple(
+    sorted(
+        path.relative_to(REPO_ROOT).as_posix()
+        for path in (
+            REPO_ROOT / ".claude" / "scripts" / "cabinet" / "voice" / "static" / "avatars"
+        ).glob("*.png")
+    )
+)
 
 
 def test_cabinet_voice_setup_in_allowlist() -> None:
@@ -149,6 +157,25 @@ def test_cabinet_voice_setup_doc_no_personal_refs() -> None:
     forbidden = ["YourBusiness", "YourBusiness", "owner", "lastname"]
     bad: list[str] = [term for term in forbidden if term in content]
     assert not bad, f"Public docs/cabinet-voice-setup.md contains personal refs: {bad}"
+
+
+def test_cabinet_voice_avatar_assets_survive_sanitize() -> None:
+    """Bundled generic Cabinet voice avatars are public runtime assets."""
+    assert CABINET_VOICE_AVATAR_RELS, "No Cabinet voice avatar PNGs found"
+    missing = [
+        path for path in CABINET_VOICE_AVATAR_RELS
+        if path not in sanitize.INCLUDE_BINARY_FILES
+    ]
+    assert not missing, (
+        f"Cabinet voice avatar assets missing from INCLUDE_BINARY_FILES: {missing!r}"
+    )
+    denied = [path for path in CABINET_VOICE_AVATAR_RELS if sanitize.is_denied(path)]
+    assert not denied, f"Sanitizer denied public Cabinet voice avatars: {denied!r}"
+
+
+def test_unreviewed_png_still_denied() -> None:
+    """The binary allowlist must not reopen arbitrary images."""
+    assert sanitize.is_denied("docs/unreviewed-image.png") is True
 
 
 def test_browserops_manual_in_allowlist() -> None:
