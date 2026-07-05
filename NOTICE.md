@@ -2,7 +2,7 @@
 
 The Homie is the original public Homie framework export at:
 
-https://github.com/SmokeAlot420/thehomie-framework
+https://github.com/TheSmokeDev/taskchad-os
 
 Maintained by SmokeDev and The Homie contributors.
 
